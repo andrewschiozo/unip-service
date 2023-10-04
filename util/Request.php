@@ -50,19 +50,16 @@ class Request
 	{
 		self::$header = apache_request_headers();
 		self::$header['Authorization'] = array_key_exists('Authorization', self::$header) ? self::$header['Authorization'] : '';
-
 		if (array_key_exists('Content-Type', self::$header) && self::$header['Content-Type'] == 'application/json') {
 			return true;
 		}
-
-		// return (array_key_exists('Content-Type', self::$header) && self::$header['Content-Type'] == 'application/json');
 		return self::$header['Authorization'];
 	}
 
 	private function formatController()
 	{
 		$uri = explode('/' ,$_SERVER['REQUEST_URI']);
-		$uri = array_slice($uri, 2);
+		$uri = array_slice($uri, 3);
 		$uri = implode('\\', $uri);
 		$controller = strtok($uri, '?');
 		$controller = 'controller\\' . $controller;
