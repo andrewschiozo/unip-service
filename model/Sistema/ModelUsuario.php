@@ -30,8 +30,6 @@ class ModelUsuario extends Model
 					$this->$attr = $val;
 					break;
 			}
-			
-			return;
 		}
 	}
 

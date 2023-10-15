@@ -1,13 +1,13 @@
 <?php
 namespace controller;
 
-use dao\Sistema\DaoUsuario;
 use util\Request;
 use util\Response;
 use util\Ldap;
 use util\JWT;
 use util\Config;
 
+use dao\Sistema\DaoUsuario;
 use model\Sistema\ModelUsuario;
 
 class Login extends Controller
@@ -19,7 +19,37 @@ class Login extends Controller
 
 	public function post()
 	{
-       
+		$Usuario = new ModelUsuario;
+		$Usuario->email = Request::getData()->email;
+		$Usuario->senha = Request::getData()->senha;
+		$DaoUsuario = new DaoUsuario;
+		$login = $DaoUsuario->setModel($Usuario)->login();
+		if(!$login)
+		{
+				Response::getInstance()
+				->addMessage('Credenciais inválidas')
+				->unauthorized();
+		}
+		
+		$DaoUsuario = $login;
+
+		$Now = new \DateTime();
+		//Dados do Token
+		$payload = [
+			'nbf' => $Now->getTimestamp()
+			,'exp' => $Now->add(new \DateInterval('P1D'))->getTimestamp()
+			,'data' => [
+				'user' => $DaoUsuario->email
+				,'name' => $DaoUsuario->nome
+				,'id' => $DaoUsuario->id
+				,'regiao' => $DaoUsuario->uf
+			]
+		];
+		
+		$jwToken = JWT::encode($payload, Config::JWTKEY);
+		Response::getInstance()
+				->addData($jwToken, 'token')
+				->ok();
 	}
 
 	public function primeiroAcesso()
