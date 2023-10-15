@@ -9,12 +9,30 @@ use util\Config;
 
 use model\ModelProduto;
 use dao\DaoProduto;
+use dao\Sistema\DaoUsuario;
 
 class Produto extends PrivateController
 {
     public function get()
     {
-        
+        $DaoProduto = new DaoProduto;
+        $Produtos = $DaoProduto->get(['id_usuario' => Request::getDecodedToken()->data->id], true);
+
+        $DaoUsuario = new DaoUsuario;
+        foreach($Produtos as &$Produto)
+        {
+            $Produto->imagens = $DaoProduto->getImagens($Produto->id);
+
+            $Produto->usuario = $DaoUsuario->get($Produto->id_usuario)[0];
+            
+            $Produto->usuario->removeAttr('senha')
+                             ->removeAttr('uf')
+                             ->removeAttr('email');
+        }
+
+        Response::getInstance()
+				->setData($Produtos)
+				->ok();
     }
 
 	public function post()

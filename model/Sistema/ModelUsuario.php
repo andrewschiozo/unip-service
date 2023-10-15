@@ -8,6 +8,7 @@ class ModelUsuario extends Model
 	protected string $email;
 	protected string $senha;
 	protected string $uf;
+	protected string $telefone;
 
 	public function __set($attr, $val)
 	{
@@ -38,5 +39,14 @@ class ModelUsuario extends Model
 		$senha = bin2hex(random_bytes(8));
 		$this->__set('senha', $senha);
 		return $senha;
+	}
+
+	public function removeAttr($attr)
+	{
+		if(property_exists($this, $attr))
+		{
+			unset($this->$attr);
+		}
+		return $this;
 	}
 }

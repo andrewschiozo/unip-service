@@ -9,6 +9,7 @@ use util\Config;
 
 use model\ModelProduto;
 use dao\DaoProduto;
+use dao\Sistema\DaoUsuario;
 
 class MeuBrecho extends Controller
 {
@@ -34,9 +35,16 @@ class MeuBrecho extends Controller
         $DaoProduto = new DaoProduto;
         $Produtos = $DaoProduto->get($filtro, true);
         
+        $DaoUsuario = new DaoUsuario;
         foreach($Produtos as &$Produto)
         {
             $Produto->imagens = $DaoProduto->getImagens($Produto->id);
+
+            $Produto->usuario = $DaoUsuario->get($Produto->id_usuario)[0];
+            
+            $Produto->usuario->removeAttr('senha')
+                             ->removeAttr('uf')
+                             ->removeAttr('email');
         }
 
         Response::getInstance()

@@ -11,6 +11,7 @@ class DaoUsuario extends DB
 	protected ?string $email;
 	protected string $senha;
 	protected string $uf;
+	protected string $telefone;
 
     public function __construct()
     {
@@ -88,8 +89,8 @@ class DaoUsuario extends DB
     private function insert()
     {
         
-        $queryUsuario = 'INSERT INTO ' . $this->table . ' (nome, email, senha, uf)
-        VALUES (:nome, :email, :senha, :uf)';
+        $queryUsuario = 'INSERT INTO ' . $this->table . ' (nome, email, senha, uf, telefone)
+        VALUES (:nome, :email, :senha, :uf, :telefone)';
         $usuarioId = false;
         
         try {
@@ -100,6 +101,7 @@ class DaoUsuario extends DB
             $stmt->bindValue(':email', $this->model->email, \PDO::PARAM_STR);
             $stmt->bindValue(':senha', $this->model->senha, \PDO::PARAM_STR);
             $stmt->bindValue(':uf', $this->model->uf, \PDO::PARAM_STR);
+            $stmt->bindValue(':telefone', $this->model->telefone, \PDO::PARAM_STR);
 
             $stmt->execute();
             $usuarioId = $this->getConn()->lastInsertId();
@@ -118,6 +120,7 @@ class DaoUsuario extends DB
                                                        ,email = :email
                                                        ,senha = :senha
                                                        ,uf = :uf
+                                                       ,telefone = :telefone
                                                     WHERE id = :id';
         
         try {
@@ -128,6 +131,7 @@ class DaoUsuario extends DB
             $stmt->bindValue(':email', $this->model->email, \PDO::PARAM_STR);
             $stmt->bindValue(':senha', $this->model->senha, \PDO::PARAM_STR);
             $stmt->bindValue(':uf', $this->model->uf, \PDO::PARAM_STR);
+            $stmt->bindValue(':telefone', $this->model->telefone, \PDO::PARAM_STR);
             $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
 
             $stmt->execute();

@@ -59,6 +59,7 @@ class Login extends Controller
 		$Usuario->email = Request::getData()->email;
 		$Usuario->senha = Request::getData()->senha;
 		$Usuario->uf = Request::getData()->regiao;
+		$Usuario->telefone = Request::getData()->telefone;
 		
 		$DaoUsuario = new DaoUsuario;
 		$DaoUsuario->setModel($Usuario);

@@ -34,6 +34,7 @@ class DaoProduto extends DB
         $queryString .= array_key_exists('id', $filtro) ? ' AND id = ' . $filtro['id'] : '';
         $queryString .= array_key_exists('uf', $filtro) ? ' AND uf = "' . $filtro['uf'] . '"' : '';
         $queryString .= array_key_exists('categoria', $filtro) ? ' AND categoria = "' . $filtro['categoria'] . '"': '';
+        $queryString .= array_key_exists('id_usuario', $filtro) ? ' AND id_usuario = ' . $filtro['id_usuario'] : '';
         $queryString .= ' ORDER BY id DESC';
         
         $result = [];
