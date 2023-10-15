@@ -48,27 +48,14 @@ class DaoUsuario extends DB
     public function getUsuario()
     {
         $queryString = 'SELECT * FROM ' . $this->table;
-        if (!is_null($this->model->usuario)) {
-            $queryString .= ' WHERE usuario = \'' . $this->model->usuario . '\'';
+        if (!is_null($this->model->email)) {
+            $queryString .= ' WHERE email = \'' . $this->model->email . '\'';
         }
         $result = [];
         try {
             $stmt = $this->getConn()->prepare($queryString);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_CLASS, 'dao\Sistema\DaoUsuario');
-            
-            switch (count($result)) {
-                case 0:
-                    throw new \Exception('Usuário não encontrado');
-                    break;
-                
-                case 1:
-                    return $result[0];
-                    break;
-                default:
-                    throw new \Exception('Usuário duplicado');
-                    break;
-            }
         } catch (\PDOException $e) {
             return $e;
         }
@@ -78,15 +65,13 @@ class DaoUsuario extends DB
     public function login()
     {
         $queryString = 'SELECT * FROM ' . $this->table . 
-                      ' WHERE usuario = :usuario
-                          AND senha = :senha
-                          AND sistema = :sistema';
+                      ' WHERE email = :email
+                          AND senha = :senha';
 
         try {
             $stmt = $this->getConn()->prepare($queryString);
             $stmt->bindValue(':usuario', $this->model->usuario, \PDO::PARAM_STR);
             $stmt->bindValue(':senha', $this->model->senha, \PDO::PARAM_STR);
-            $stmt->bindValue(':sistema', $this->model->sistema, \PDO::PARAM_STR);
             $stmt->execute();
             $result = $stmt->fetchObject('dao\Sistema\DaoUsuario');
             

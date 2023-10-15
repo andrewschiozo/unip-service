@@ -24,8 +24,6 @@ class Login extends Controller
 
 	public function primeiroAcesso()
 	{
-		echo '<pre>';
-		var_dump(Request::getData());
 		$Usuario = new ModelUsuario;
 		$Usuario->nome = Request::getData()->nome;
 		$Usuario->email = Request::getData()->email;
@@ -34,11 +32,22 @@ class Login extends Controller
 		
 		$DaoUsuario = new DaoUsuario;
 		$DaoUsuario->setModel($Usuario);
-		var_dump($DaoUsuario->getUsuario());
+		
+		if(count($DaoUsuario->getUsuario()) > 0)
+		{
+			Response::getInstance()
+					->badRequest('O Usuário já existe');
+		}
 
-		die();
-		Response::getInstance()
-					->ok();
+		try{
+			$DaoUsuario->save();
+			
+			Response::getInstance()
+					->created();
+
+		} catch (\Exception $e) {
+			Response::getInstance()
+					->badRequest('Wooops! Não foi possível salvar.');
+		}
 	}
-
 }
