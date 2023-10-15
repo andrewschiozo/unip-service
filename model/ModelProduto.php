@@ -30,6 +30,14 @@ class ModelProduto extends Model
 		}
 	}
 
+    public function __get($attr)
+    {
+        if(property_exists($this, $attr))
+        {
+            return $this->$attr;
+        }
+    }
+
     public function removerImagem($index)
     {
         if(array_key_exists($index, $this->imagens))

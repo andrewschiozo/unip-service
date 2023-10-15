@@ -32,10 +32,15 @@ class MeuBrecho extends Controller
 
         
         $DaoProduto = new DaoProduto;
-        $produtos = $DaoProduto->get($filtro, true);
+        $Produtos = $DaoProduto->get($filtro, true);
+        
+        foreach($Produtos as &$Produto)
+        {
+            $Produto->imagens = $DaoProduto->getImagens($Produto->id);
+        }
 
         Response::getInstance()
-				->setData($produtos)
+				->setData($Produtos)
 				->ok();
     }
 }

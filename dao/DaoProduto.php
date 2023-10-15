@@ -50,6 +50,22 @@ class DaoProduto extends DB
         return $result;
     }
 
+    public function getImagens($id_produto)
+    {
+        $queryString = 'SELECT * FROM produto_imagem WHERE id = ' . $id_produto;
+        $queryString .= ' ORDER BY id DESC';
+        
+        $result = [];
+        try {
+            $stmt = $this->getConn()->prepare($queryString);
+            $stmt->execute();
+            
+            $result = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        } catch (\PDOException $e) {
+            echo ($e->getMessage());
+        }
+        return $result;
+    }
     public function getUsuario()
     {
         $queryString = 'SELECT * FROM ' . $this->table;
@@ -91,14 +107,28 @@ class DaoProduto extends DB
             $stmt->bindValue(':valor', $this->model->valor, \PDO::PARAM_STR);
 
             $stmt->execute();
-            $usuarioId = $this->getConn()->lastInsertId();
+            $produtoId = $this->getConn()->lastInsertId();
             
+            $valuesImagem = [];
+            foreach($this->model->imagens as $img)
+            {
+                $valuesImagem[] = '(' . $produtoId . ', "' . $img . '")';
+            }
+            
+            // Persistência das imagens            
+            $valuesImagem = implode(', ', $valuesImagem);
+            
+            $queryImagem = 'INSERT INTO produto_imagem (id_produto, imagem) VALUES ' . $valuesImagem;
+            
+            $stmt = $this->getConn()->prepare($queryImagem);
+            $stmt->execute();
+
             $this->getConn()->commit();            
         } catch (\PDOException $e) {
             $this->getConn()->rollback();
             echo ($e->getMessage());
         }
-        return $usuarioId;
+        return $produtoId;
     }
 
     private function update($id)

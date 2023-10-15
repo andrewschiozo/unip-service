@@ -30,12 +30,19 @@ class Produto extends PrivateController
         // $Produto->imagens = Request::getData()->imagens;
 		$DaoProduto = new DaoProduto;
 		$DaoProduto->setModel($Produto);
-		echo '<pre>';
-		print_r(Request::getData());
-		// print_r($_FILES);
-		die();
+
+		foreach(Request::getData()->imagens as $imagem)
+		{
+			if(!is_null($imagem))
+			{
+				$time = time();
+				$filename = ($time + rand(1, 9)) . substr(str_shuffle("abcdefghijklmnopqrstuvwxyz"), 0, 4);
+				$Produto->imagens = $this->base64_to_jpeg($imagem, $filename . '.jpg');
+			}
+		}
+		
 		try{
-			$DaoProduto->save();
+			$idProduto = $DaoProduto->save();
 			
 			Response::getInstance()
 					->created();
@@ -44,5 +51,24 @@ class Produto extends PrivateController
 			Response::getInstance()
 					->badRequest('Wooops! Não foi possível salvar.');
 		}		
+	}
+
+	private function base64_to_jpeg($base64_string, $output_file) {
+		// open the output file for writing
+		$ifp = fopen( '../app/www/img/' . $output_file, 'wb' ); 
+
+		// split the string on commas
+		// $data[ 0 ] == "data:image/png;base64"
+		// $data[ 1 ] == <actual base64 string>
+		$data = explode( ',', $base64_string );
+	
+		
+		// we could add validation here with ensuring count( $data ) > 1
+		fwrite( $ifp, base64_decode(str_replace(' ', '+', $data[1])));
+		
+		// clean up the file resource
+		fclose( $ifp ); 
+	
+		return $output_file; 
 	}
 }
